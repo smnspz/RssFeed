@@ -30,7 +30,7 @@ class FeedListActivity : AppCompatActivity() {
     }
 
     private fun setupViewModel() {
-        val viewModel = ViewModelProvider(this, FeedListViewModelFactory(getNetworkService()))
+        viewModel = ViewModelProvider(this, FeedListViewModelFactory(getNetworkService()))
             .get(FeedListViewModel::class.java)
     }
 
