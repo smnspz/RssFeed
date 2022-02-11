@@ -1,4 +1,4 @@
-# Project Title
+# Rss Feed
 
 An Rss Feed application for android devices 
 
