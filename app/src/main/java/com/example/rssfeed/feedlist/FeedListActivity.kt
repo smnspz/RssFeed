@@ -1,6 +1,7 @@
 package com.example.rssfeed.feedlist
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -58,6 +59,7 @@ class FeedListActivity : AppCompatActivity() {
                     Status.ERROR -> {
                         binding.recyclerView.visibility = View.VISIBLE
                         Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
+                        Log.e(it.message, "Error Inside activity")
                     }
                     Status.LOADING -> {
                         binding.recyclerView.visibility = View.GONE
