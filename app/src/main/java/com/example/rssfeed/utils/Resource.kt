@@ -1,7 +1,6 @@
 package com.example.rssfeed.utils
 
 data class Resource<out T>(val status: Status, val data: T?, val message: String?) {
-    // TODO: what is a companion object?
     companion object {
         fun <T> success(data: T): Resource<T> = Resource(
             status = Status.SUCCESS,

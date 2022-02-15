@@ -1,6 +1,7 @@
 package com.example.rssfeed.api
 
 import android.util.Log
+import com.example.rssfeed.data.RssFeed
 import com.example.rssfeed.data.RssItem
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -18,7 +19,7 @@ private val service: Network by lazy {
         .build()
 
     val retrofit = Retrofit.Builder()
-        .baseUrl("https://feedforall.com")
+        .baseUrl("https://feedforall.com/")
         .client(okHttpClient)
         .addConverterFactory(SimpleXmlConverterFactory.create())
         .build()
@@ -30,5 +31,5 @@ fun getNetworkService() = service
 
 interface Network {
     @GET("blog-feed.xml")
-    suspend fun fetchRssItems(): List<RssItem>
+    suspend fun fetchRssItems(): RssFeed
 }

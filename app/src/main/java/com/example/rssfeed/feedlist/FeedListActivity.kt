@@ -54,7 +54,7 @@ class FeedListActivity : AppCompatActivity() {
                 when (resource.status) {
                     Status.SUCCESS -> {
                         binding.recyclerView.visibility = View.VISIBLE
-                        resource.data?.let { rssItems -> retrieveList(rssItems) }
+                        resource.data?.let { feed -> retrieveList(feed.channel?.item ?: listOf()) }
                     }
                     Status.ERROR -> {
                         binding.recyclerView.visibility = View.VISIBLE
