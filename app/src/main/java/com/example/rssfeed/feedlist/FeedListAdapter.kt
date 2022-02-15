@@ -7,7 +7,6 @@ import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rssfeed.data.RssItem
 import com.example.rssfeed.databinding.RowFeedItemBinding
-import com.example.rssfeed.feedItem.FeedItemFragment
 import com.example.rssfeed.utils.HtmlTrimmer
 
 interface ClickListener {
@@ -19,12 +18,6 @@ class FeedListAdapter(private val rssItems: MutableList<RssItem>) :
 
     private var listener: ClickListener? = null
 
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataViewHolder {
-        val binding = RowFeedItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return DataViewHolder(binding)
-    }
-
     class DataViewHolder(private val binding: RowFeedItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(rssItem: RssItem) {
@@ -35,6 +28,11 @@ class FeedListAdapter(private val rssItems: MutableList<RssItem>) :
                 binding.tvRssDescription.text = HtmlCompat.fromHtml(trimmedHtml, 0)
             }
         }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataViewHolder {
+        val binding = RowFeedItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return DataViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
