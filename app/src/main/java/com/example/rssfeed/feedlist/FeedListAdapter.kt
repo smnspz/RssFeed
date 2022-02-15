@@ -1,10 +1,9 @@
 package com.example.rssfeed.feedlist
 
-import android.text.method.TextKeyListener.clear
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.rssfeed.data.RssFeed
 import com.example.rssfeed.data.RssItem
 import com.example.rssfeed.databinding.RowFeedItemBinding
 
@@ -16,11 +15,12 @@ class FeedListAdapter(private val rssItems: MutableList<RssItem>) :
         return DataViewHolder(binding)
     }
 
-    class DataViewHolder(private val binding: RowFeedItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class DataViewHolder(private val binding: RowFeedItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(rssItem: RssItem) {
             itemView.apply {
                 binding.tvRssTitle.text = rssItem.title
-                binding.tvRssDescription.text = rssItem.description
+                binding.tvRssDescription.text = HtmlCompat.fromHtml(rssItem.description ?: "", 0)
             }
         }
     }
