@@ -1,25 +1,29 @@
 package com.example.rssfeed.feedlist
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rssfeed.data.RssItem
 import com.example.rssfeed.databinding.RowFeedItemBinding
+import com.example.rssfeed.feedItem.FeedItemFragment
 import com.example.rssfeed.utils.HtmlTrimmer
 
-interface ClickListener {
-    fun onClickListener(feedItemUrl: String) {}
-}
 
-class FeedListAdapter(private val rssItems: MutableList<RssItem>) :
+class FeedListAdapter(private val rssItems: MutableList<RssItem>,
+                      private val activity: FeedListActivity,
+
+) :
     RecyclerView.Adapter<FeedListAdapter.DataViewHolder>() {
 
-    private var listener: ClickListener? = null
+    private var fragment: FeedItemFragment = FeedItemFragment()
+    var setupFragment: ((url: String) -> Unit)? = null
 
     class DataViewHolder(private val binding: RowFeedItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        val moreButton = binding.btnMore
+
         fun bind(rssItem: RssItem) {
             val trimmedHtml = HtmlTrimmer
                 .trimAnchorLink(rssItem.description ?: "")
@@ -37,8 +41,10 @@ class FeedListAdapter(private val rssItems: MutableList<RssItem>) :
 
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
         holder.bind(rssItems[position])
-        holder.itemView.setOnClickListener {
-            rssItems.getOrNull(position)?.link?.let { listener?.onClickListener(it) }
+        holder.moreButton.setOnClickListener {
+            rssItems.getOrNull(position)?.link?.let {
+                setupFragment?.invoke(it)
+            }
         }
     }
 
