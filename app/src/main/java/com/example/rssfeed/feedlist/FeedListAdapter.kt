@@ -10,13 +10,10 @@ import com.example.rssfeed.feedItem.FeedItemFragment
 import com.example.rssfeed.utils.HtmlTrimmer
 
 
-class FeedListAdapter(private val rssItems: MutableList<RssItem>,
-                      private val activity: FeedListActivity,
+class FeedListAdapter(private val rssItems: MutableList<RssItem>) :
 
-) :
     RecyclerView.Adapter<FeedListAdapter.DataViewHolder>() {
 
-    private var fragment: FeedItemFragment = FeedItemFragment()
     var setupFragment: ((url: String) -> Unit)? = null
 
     class DataViewHolder(private val binding: RowFeedItemBinding) :
