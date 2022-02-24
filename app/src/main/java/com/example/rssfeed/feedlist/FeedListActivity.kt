@@ -41,7 +41,7 @@ class FeedListActivity : AppCompatActivity() {
 
     private fun setupUI() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = FeedListAdapter(mutableListOf(), this)
+        adapter = FeedListAdapter(mutableListOf())
         binding.recyclerView.adapter = adapter
         adapter.setupFragment = { url -> setupFragment("https://google.com/") }
 

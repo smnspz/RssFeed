@@ -9,7 +9,6 @@ import com.example.rssfeed.databinding.RowFeedItemBinding
 import com.example.rssfeed.feedItem.FeedItemFragment
 import com.example.rssfeed.utils.HtmlTrimmer
 
-
 class FeedListAdapter(private val rssItems: MutableList<RssItem>) :
 
     RecyclerView.Adapter<FeedListAdapter.DataViewHolder>() {
