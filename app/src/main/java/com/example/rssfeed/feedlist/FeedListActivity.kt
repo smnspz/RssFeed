@@ -1,12 +1,16 @@
 package com.example.rssfeed.feedlist
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rssfeed.R
@@ -29,9 +33,13 @@ class FeedListActivity : AppCompatActivity() {
         binding = ActivityFeedListBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        setupViewModel()
         setupUI()
+    }
+
+    override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
+        setupViewModel()
         setupObserver()
+        return super.onCreateView(name, context, attrs)
     }
 
     private fun setupViewModel() {
@@ -50,6 +58,7 @@ class FeedListActivity : AppCompatActivity() {
         })
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun retrieveList(rssItems: List<RssItem>) {
         adapter.apply {
             addRssItems(rssItems)
@@ -58,37 +67,65 @@ class FeedListActivity : AppCompatActivity() {
     }
 
     fun setupFragment(url: String) {
-
         val bundle = Bundle()
         bundle.putString("URL", url)
         fragment.arguments = bundle
 
         this.supportFragmentManager
             .beginTransaction()
-
             .replace(R.id.mainActivity, fragment)
             .addToBackStack(null)
             .commit()
     }
 
-    private fun setupObserver() {
+    private fun setupObserver() = viewModel.getFeedList().observe(this, Observer {
+        Observer<FeedListViewModel.Result> { value -> value.let {
+            when(it) {
+                is FeedListViewModel.Result.Success -> {
+                    binding.loadingSpinner.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+                    retrieveList(it.rssFeed?.channel?.item ?: listOf())
+                }
+                is FeedListViewModel.Result.Error -> {
+                    binding.loadingSpinner.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+                    Toast.makeText(this, it.errorMessage, Toast.LENGTH_LONG).show()
+                    Log.e(it.errorMessage,"Error inside activity")
+                }
+                is FeedListViewModel.Result.Loading -> {
+                    if (viewModel.hasLoadedRssFeed) {
+                        binding.loadingSpinner.visibility = View.GONE
+                    } else {
+                        binding.loadingSpinner.visibility = View.VISIBLE
+                    }
+                }
+            }
+        } }
+    })
+
+
+/*    private fun setupObserver() = Observer<FeedListViewModel.Result> { value -> value.let {
         viewModel.getFeedList().observe(this, Observer {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        binding.recyclerView.visibility = View.VISIBLE
-                        resource.data?.let { feed -> retrieveList(feed.channel?.item ?: listOf()) }
-                    }
-                    Status.ERROR -> {
-                        binding.recyclerView.visibility = View.VISIBLE
-                        Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
-                        Log.e(it.message, "Error Inside activity")
-                    }
-                    Status.LOADING -> {
-                        binding.recyclerView.visibility = View.GONE
+            when(it) {
+                is FeedListViewModel.Result.Success -> {
+                    binding.loadingSpinner.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+                    retrieveList(it.rssFeed?.channel?.item ?: listOf())
+                }
+                is FeedListViewModel.Result.Error -> {
+                    binding.loadingSpinner.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+                    Toast.makeText(this, it.errorMessage, Toast.LENGTH_LONG).show()
+                    Log.e(it.errorMessage,"Error inside activity")
+                }
+                is FeedListViewModel.Result.Loading -> {
+                    if (viewModel.hasLoadedRssFeed) {
+                        binding.loadingSpinner.visibility = View.GONE
+                    } else {
+                        binding.loadingSpinner.visibility = View.VISIBLE
                     }
                 }
             }
         })
-    }
+    } }*/
 }
