@@ -9,11 +9,15 @@ import com.example.rssfeed.databinding.RowFeedItemBinding
 import com.example.rssfeed.feedItem.FeedItemFragment
 import com.example.rssfeed.utils.HtmlTrimmer
 
+interface OnButtonClick {
+    fun onClickListener(url: String)
+}
+
 class FeedListAdapter(private val rssItems: MutableList<RssItem>) :
 
     RecyclerView.Adapter<FeedListAdapter.DataViewHolder>() {
 
-    var setupFragment: ((url: String) -> Unit)? = null
+    private var onButtonClick: OnButtonClick? = null
 
     class DataViewHolder(private val binding: RowFeedItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -39,7 +43,7 @@ class FeedListAdapter(private val rssItems: MutableList<RssItem>) :
         holder.bind(rssItems[position])
         holder.moreButton.setOnClickListener {
             rssItems.getOrNull(position)?.link?.let {
-                setupFragment?.invoke(it)
+               onButtonClick?.onClickListener(it)
             }
         }
     }
@@ -52,4 +56,8 @@ class FeedListAdapter(private val rssItems: MutableList<RssItem>) :
             addAll(rssItems)
         }
     }
+
+   fun registerListener(listener: OnButtonClick) {
+       this.onButtonClick = listener
+   }
 }

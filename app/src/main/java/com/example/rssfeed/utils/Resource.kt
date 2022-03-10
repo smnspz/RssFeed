@@ -19,7 +19,5 @@ data class Resource<out T>(val status: Status, val data: T?, val message: String
             data = data,
             message = null
         )
-
-
     }
 }

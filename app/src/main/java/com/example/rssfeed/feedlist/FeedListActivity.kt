@@ -16,13 +16,13 @@ import com.example.rssfeed.databinding.ActivityFeedListBinding
 import com.example.rssfeed.feedItem.FeedItemFragment
 import com.example.rssfeed.utils.Status
 
-
 class FeedListActivity : AppCompatActivity() {
 
     private lateinit var adapter: FeedListAdapter
     private lateinit var viewModel: FeedListViewModel
     private lateinit var binding: ActivityFeedListBinding
     private val fragment: FeedItemFragment = FeedItemFragment()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,8 +43,11 @@ class FeedListActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = FeedListAdapter(mutableListOf())
         binding.recyclerView.adapter = adapter
-        adapter.setupFragment = { url -> setupFragment("https://google.com/") }
-
+        adapter.registerListener(object:OnButtonClick {
+            override fun onClickListener(url: String) {
+                setupFragment(url)
+            }
+        })
     }
 
     private fun retrieveList(rssItems: List<RssItem>) {
