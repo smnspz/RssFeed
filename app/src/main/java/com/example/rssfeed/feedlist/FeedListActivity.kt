@@ -13,6 +13,7 @@ import com.example.rssfeed.api.getNetworkService
 import com.example.rssfeed.data.RssItem
 import com.example.rssfeed.databinding.ActivityFeedListBinding
 import com.example.rssfeed.feedItem.FeedItemFragment
+import com.example.rssfeed.utils.Status
 
 class FeedListActivity : AppCompatActivity() {
 
@@ -75,18 +76,18 @@ class FeedListActivity : AppCompatActivity() {
         viewModel.getFeedList()
         viewModel.feedList.observe(this, Observer {
             when (it) {
-                is FeedListViewModel.Result.Success -> {
+                is Status.Success -> {
                     binding.loadingSpinner.visibility = View.GONE
                     binding.recyclerView.visibility = View.VISIBLE
                     retrieveList(it.data.channel?.item ?: listOf())
                 }
-                is FeedListViewModel.Result.Error -> {
+                is Status.Error -> {
                     binding.loadingSpinner.visibility = View.GONE
                     binding.recyclerView.visibility = View.VISIBLE
                     Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
                     Log.e(it.message, "Error inside activity")
                 }
-                is FeedListViewModel.Result.Loading -> {
+                is Status.Loading -> {
                     if (viewModel.hasLoadedRssFeed) {
                         binding.loadingSpinner.visibility = View.GONE
                     } else {
