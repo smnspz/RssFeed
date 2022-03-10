@@ -33,7 +33,7 @@ class FeedListViewModel(private val repository: FeedListRepository) : ViewModel(
     }
 
     sealed class Result<T> {
-        class Success<T>(val data: RssFeed) : Result<T>()
+        class Success<T>(val data: T) : Result<T>()
         class Error<T>(val message: String) : Result<T>()
         class Loading<T>: Result<T>()
     }
