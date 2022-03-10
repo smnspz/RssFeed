@@ -1,16 +1,11 @@
 package com.example.rssfeed.feedlist
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
-import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import android.webkit.WebView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rssfeed.R
@@ -18,7 +13,6 @@ import com.example.rssfeed.api.getNetworkService
 import com.example.rssfeed.data.RssItem
 import com.example.rssfeed.databinding.ActivityFeedListBinding
 import com.example.rssfeed.feedItem.FeedItemFragment
-import com.example.rssfeed.utils.Status
 
 class FeedListActivity : AppCompatActivity() {
 
@@ -33,13 +27,13 @@ class FeedListActivity : AppCompatActivity() {
         binding = ActivityFeedListBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        setupViewModel()
         setupUI()
     }
 
-    override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
-        setupViewModel()
+    override fun onStart() {
         setupObserver()
-        return super.onCreateView(name, context, attrs)
+        super.onStart()
     }
 
     private fun setupViewModel() {
@@ -58,7 +52,6 @@ class FeedListActivity : AppCompatActivity() {
         })
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun retrieveList(rssItems: List<RssItem>) {
         adapter.apply {
             addRssItems(rssItems)
@@ -78,45 +71,20 @@ class FeedListActivity : AppCompatActivity() {
             .commit()
     }
 
-    private fun setupObserver() = viewModel.getFeedList().observe(this, Observer {
-        Observer<FeedListViewModel.Result> { value -> value.let {
-            when(it) {
+    private fun setupObserver() {
+        viewModel.getFeedList()
+        viewModel.feedList.observe(this, Observer {
+            when (it) {
                 is FeedListViewModel.Result.Success -> {
                     binding.loadingSpinner.visibility = View.GONE
                     binding.recyclerView.visibility = View.VISIBLE
-                    retrieveList(it.rssFeed?.channel?.item ?: listOf())
+                    retrieveList(it.data.channel?.item ?: listOf())
                 }
                 is FeedListViewModel.Result.Error -> {
                     binding.loadingSpinner.visibility = View.GONE
                     binding.recyclerView.visibility = View.VISIBLE
-                    Toast.makeText(this, it.errorMessage, Toast.LENGTH_LONG).show()
-                    Log.e(it.errorMessage,"Error inside activity")
-                }
-                is FeedListViewModel.Result.Loading -> {
-                    if (viewModel.hasLoadedRssFeed) {
-                        binding.loadingSpinner.visibility = View.GONE
-                    } else {
-                        binding.loadingSpinner.visibility = View.VISIBLE
-                    }
-                }
-            }
-        } }
-    })
-
-
-/*    private fun setupObserver() = Observer<FeedListViewModel.Result> { value -> value.let {
-        viewModel.getFeedList().observe(this, Observer {
-            when(it) {
-                is FeedListViewModel.Result.Success -> {
-                    binding.loadingSpinner.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-                    retrieveList(it.rssFeed?.channel?.item ?: listOf())
-                }
-                is FeedListViewModel.Result.Error -> {
-                    binding.loadingSpinner.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-                    Toast.makeText(this, it.errorMessage, Toast.LENGTH_LONG).show()
-                    Log.e(it.errorMessage,"Error inside activity")
+                    Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
+                    Log.e(it.message, "Error inside activity")
                 }
                 is FeedListViewModel.Result.Loading -> {
                     if (viewModel.hasLoadedRssFeed) {
@@ -127,5 +95,5 @@ class FeedListActivity : AppCompatActivity() {
                 }
             }
         })
-    } }*/
+    }
 }

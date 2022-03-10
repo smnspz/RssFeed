@@ -1,15 +1,11 @@
 package com.example.rssfeed.feedlist
 
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.example.rssfeed.data.RssFeed
-import com.example.rssfeed.utils.Resource
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -17,24 +13,29 @@ import java.lang.Exception
 class FeedListViewModel(private val repository: FeedListRepository) : ViewModel() {
 
     private var _hasLoadedRssFeed: Boolean = false
-    val hasLoadedRssFeed: Boolean =  _hasLoadedRssFeed
+    val hasLoadedRssFeed: Boolean = _hasLoadedRssFeed
 
-    fun getFeedList() = liveData(Dispatchers.IO) {
-        emit(Result.Loading)
+    private var _feedList: MutableLiveData<Result<RssFeed>> = MutableLiveData()
+    val feedList = _feedList
+
+    fun getFeedList() = viewModelScope.launch {
+
+        _feedList.postValue(Result.Loading())
         _hasLoadedRssFeed = false
+
         try {
-            emit(Result.Success(repository.getFeed()))
-            Log.d(repository.getFeed().channel?.item.toString(), "RssFeed item")
+            _feedList.postValue(Result.Success(repository.getFeed()))
             _hasLoadedRssFeed = true
+
         } catch (exception: Exception) {
-            emit(Result.Error(exception.message ?: "Error occurred"))
+            _feedList.postValue(Result.Error(exception.message ?: "Error while fetching feedList"))
         }
     }
 
-    sealed class Result {
-        class Success(val rssFeed: RssFeed?) : Result()
-        class Error(val errorMessage: String) : Result()
-        object Loading : Result()
+    sealed class Result<T> {
+        class Success<T>(val data: RssFeed) : Result<T>()
+        class Error<T>(val message: String) : Result<T>()
+        class Loading<T>: Result<T>()
     }
 }
 
