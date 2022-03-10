@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rssfeed.R
 import com.example.rssfeed.api.getNetworkService
+import com.example.rssfeed.data.RssFeed
 import com.example.rssfeed.data.RssItem
 import com.example.rssfeed.databinding.ActivityFeedListBinding
 import com.example.rssfeed.feedItem.FeedItemFragment
@@ -77,24 +78,36 @@ class FeedListActivity : AppCompatActivity() {
         viewModel.feedList.observe(this, Observer {
             when (it) {
                 is Status.Success -> {
-                    binding.loadingSpinner.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-                    retrieveList(it.data.channel?.item ?: listOf())
+                    changeViewBasedOnStatus(it)
                 }
                 is Status.Error -> {
-                    binding.loadingSpinner.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-                    Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
-                    Log.e(it.message, "Error inside activity")
+                    changeViewBasedOnStatus(it)
                 }
                 is Status.Loading -> {
-                    if (viewModel.hasLoadedRssFeed) {
-                        binding.loadingSpinner.visibility = View.GONE
-                    } else {
-                        binding.loadingSpinner.visibility = View.VISIBLE
-                    }
+                    showSpinnerOnLoading()
                 }
             }
         })
+    }
+
+    private fun changeViewBasedOnStatus(status: Status<RssFeed>) {
+        if (status is Status.Success) {
+            binding.loadingSpinner.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
+            if (status is Status.Error) {
+                Log.e(status.message, "Error inside activity")
+                Toast.makeText(this, status.message, Toast.LENGTH_LONG).show()
+                return
+            }
+            retrieveList(status.data.channel?.item ?: listOf())
+        }
+    }
+
+    private fun showSpinnerOnLoading() {
+        if (viewModel.hasLoadedRssFeed) {
+            binding.loadingSpinner.visibility = View.GONE
+        } else {
+            binding.loadingSpinner.visibility = View.VISIBLE
+        }
     }
 }
