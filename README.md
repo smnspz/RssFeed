@@ -1,6 +1,8 @@
 # Rss Feed
 
-An Rss Feed application for android devices 
+A sample app I made to get my hands on Kotlin and the Android SDK.
+It gets an RSS feed from a remote source with Retrofit, parses it and display it with a RecyclerView.
+Every row from the RecyclerView has a "Show more" button which opens a WebView.
 
 ## Getting Started
 
